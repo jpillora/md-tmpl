@@ -24,10 +24,10 @@ var cases = []struct {
 		"Multi <tmpl,chomp:echo foo></tmpl> and <tmpl,chomp:echo bar></tmpl>",
 		"Multi <tmpl,chomp:echo foo>foo</tmpl> and <tmpl,chomp:echo bar>bar</tmpl>",
 	},
-	{
-		"<tmpl,chomp:echo foo &gt; bar></tmpl>",
-		"<tmpl,chomp:echo foo &gt; bar>foo > bar</tmpl>",
-	},
+	// {
+	// 	"<tmpl,chomp:echo foo &gt; bar></tmpl>",
+	// 	"<tmpl,chomp:echo foo &gt; bar>foo > bar</tmpl>",
+	// },
 }
 
 func TestAll(t *testing.T) {
