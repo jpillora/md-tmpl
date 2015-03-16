@@ -1,0 +1,1 @@
+<tmpl:echo -n This is a \&lt;a href=\"foo\"\&gt;link\&lt;/a\&gt;>This is a <a href="foo">link</a></tmpl>

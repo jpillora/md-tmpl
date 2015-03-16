@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"log"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 var VERSION = "0.0.0-dev"
@@ -43,9 +45,6 @@ func main() {
 	if *p {
 		*preview = true
 	}
-	if *preview {
-		fmt.Printf("Preview mode\n")
-	}
 
 	for _, file := range files {
 		processFile(file)
@@ -53,7 +52,7 @@ func main() {
 }
 
 func processFile(file string) {
-	fmt.Printf("%s -", file)
+	fmt.Printf("%s: ", file)
 	//as a safety measure, only process .md files
 	if filepath.Ext(file) != ".md" {
 		fmt.Printf(" not a .md file\n")
@@ -70,6 +69,7 @@ func processFile(file string) {
 
 	//no writes!
 	if *preview {
+		fmt.Printf("\n")
 		return
 	}
 
@@ -83,9 +83,7 @@ func processFile(file string) {
 	fmt.Printf(" success\n")
 }
 
-//HACK: two "code"s allows it to occur at either side
-//	(this will not work for any more options)
-var start = regexp.MustCompile(`<tmpl(,code)?(,chomp)?(,code)?:([^>]+)>`)
+var start = regexp.MustCompile(`<tmpl((,\w+)*):([^>]+)>`)
 var end = regexp.MustCompile(`</tmpl>`)
 
 func process(input []byte) []byte {
@@ -100,11 +98,26 @@ func process(input []byte) []byte {
 			break
 		}
 		//match result contains pairs
-		//[all 0 1] [code 2 3] [chomp 4 5] [code 6 7]  [cmd 8 9]
+		//[all 0 1] [options 2 3] [last op 4 5] [cmd 6 7]
 		pre := input[:m[1]]
-		code := m[2] > 0 || m[6] > 0
-		chomp := code || m[4] > 0
-		cmd := input[m[8]:m[9]]
+		cmd := input[m[6]:m[7]]
+
+		//check opts
+		code := false
+		chomp := false
+		if m[4] > 0 {
+			str := string(input[m[2]+1 : m[3]]) //trim comma prefix
+			opts := strings.Split(str, ",")     //then split
+			for _, o := range opts {
+				switch o {
+				case "code":
+					code = true
+					chomp = true //code forces newlines, so just make sure there's only one
+				case "chomp":
+					chomp = true
+				}
+			}
+		}
 
 		//match next template close, from offset
 		o := m[1]
@@ -118,21 +131,21 @@ func process(input []byte) []byte {
 		//safe to trim input
 		input = input[o+m[1]:]
 
+		//html entity decode command
+		cmd = []byte(html.UnescapeString(string(cmd)))
+
 		//display command and skip
 		if *preview {
-			fmt.Printf("  %s\n", cmd)
+			fmt.Printf("\n  %s", cmd)
 			continue
 		}
 
 		//run command!
 		result := run(cmd)
 
-		//swap in gt symbols
-		result = bytes.Replace(result, []byte("&gt;"), []byte(">"), -1)
-
-		//trim newline
-		if chomp {
-			result = bytes.TrimRight(result, "\n")
+		//trim *last* newline
+		if chomp && bytes.HasSuffix(result, []byte("\n")) {
+			result = result[:len(result)-1] //newline is 13 => 1 byte
 		}
 		//wrap in code block
 		if code {
@@ -144,7 +157,6 @@ func process(input []byte) []byte {
 		output = append(output, pre...)
 		output = append(output, result...)
 		output = append(output, end...)
-
 	}
 
 	return output
