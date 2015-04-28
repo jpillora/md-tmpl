@@ -52,7 +52,7 @@ func main() {
 }
 
 func processFile(file string) {
-	fmt.Printf("%s: ", file)
+	fmt.Printf("%s ", file)
 	//as a safety measure, only process .md files
 	if filepath.Ext(file) != ".md" {
 		fmt.Printf(" not a .md file\n")
@@ -83,7 +83,7 @@ func processFile(file string) {
 	fmt.Printf(" success\n")
 }
 
-var start = regexp.MustCompile(`<tmpl((,\w+)*):([^>]+)>`)
+var start = regexp.MustCompile(`<tmpl((,\w+(=\w+)?)*):([^>]+)>`)
 var end = regexp.MustCompile(`</tmpl>`)
 
 func process(input []byte) []byte {
@@ -98,20 +98,30 @@ func process(input []byte) []byte {
 			break
 		}
 		//match result contains pairs
-		//[all 0 1] [options 2 3] [last op 4 5] [cmd 6 7]
+		//[all 0 1] [options 2 3] [last op 4 5] [cmd 8 9]
 		pre := input[:m[1]]
-		cmd := input[m[6]:m[7]]
+		cmd := input[m[8]:m[9]]
 
 		//check opts
-		code := false
+		code := ""
 		chomp := false
 		if m[4] > 0 {
 			str := string(input[m[2]+1 : m[3]]) //trim comma prefix
 			opts := strings.Split(str, ",")     //then split
+
 			for _, o := range opts {
-				switch o {
+				kv := strings.Split(o, "=")
+				k := kv[0]
+				v := ""
+				if len(kv) == 2 {
+					v = kv[1]
+				}
+				switch k {
 				case "code":
-					code = true
+					code = v
+					if code == "" {
+						code = "plain"
+					}
 					chomp = true //code forces newlines, so just make sure there's only one
 				case "chomp":
 					chomp = true
@@ -136,7 +146,7 @@ func process(input []byte) []byte {
 
 		//display command and skip
 		if *preview {
-			fmt.Printf("\n  %s", cmd)
+			fmt.Printf("\n  %s (code=%s chomp=%v)", cmd, code, chomp)
 			continue
 		}
 
@@ -148,8 +158,8 @@ func process(input []byte) []byte {
 			result = result[:len(result)-1] //newline is 13 => 1 byte
 		}
 		//wrap in code block
-		if code {
-			result = append([]byte("\n```\n"), result...)
+		if code != "" {
+			result = append([]byte("\n``` "+code+" \n"), result...)
 			result = append(result, []byte("\n```\n")...)
 		}
 
@@ -161,6 +171,8 @@ func process(input []byte) []byte {
 
 	return output
 }
+
+var exitMsg = []byte("exit status 1\n")
 
 //run script by piping into bash
 func run(script []byte) []byte {
@@ -194,7 +206,10 @@ func run(script []byte) []byte {
 	}()
 
 	//ignore whether it failed or not
-	cmd.Run()
+	cmd.Start()
+	cmd.Wait()
 
-	return b.Bytes()
+	fmt.Print(".")
+
+	return bytes.TrimSuffix(b.Bytes(), exitMsg)
 }

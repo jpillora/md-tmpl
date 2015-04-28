@@ -1,7 +1,7 @@
 ### Usage
 
-<tmpl,code: md-tmpl --help>
-```
+<tmpl,code=md: md-tmpl --help>
+``` md 
 
 	Usage: md-tmpl [options] markdown-files
 
