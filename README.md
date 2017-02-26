@@ -1,3 +1,10 @@
+## :warning: Superceded
+
+Please use https://github.com/campoy/embedmd instead
+
+----
+
+
 # md-tmpl
 
 Simple markdown templating using shell commands
