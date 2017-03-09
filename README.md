@@ -1,4 +1,4 @@
-## :warning: Superceded
+## :warning: Superseded
 
 Please use https://github.com/campoy/embedmd instead
 
