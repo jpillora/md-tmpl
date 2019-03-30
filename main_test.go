@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -32,10 +33,15 @@ var cases = []struct {
 
 func TestAll(t *testing.T) {
 	for i, c := range cases {
-		out := process([]byte(c.input))
+		_, out := process([]byte(c.input))
 		expected := []byte(c.expected)
 		if bytes.Compare(out, expected) != 0 {
 			t.Errorf("Case #%d: Expected and got\n====\n%s\n====\n%s\n", i+1, expected, out)
 		}
 	}
+}
+
+func TestRun(t *testing.T) {
+	r := run("date")
+	fmt.Print(string(r))
 }

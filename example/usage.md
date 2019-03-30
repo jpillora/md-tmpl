@@ -1,21 +1,17 @@
 ### Usage
 
-<tmpl,code=md: md-tmpl --help>
-``` md 
+<!--tmpl,chomp,code=plain: md-tmpl --help-->
+``` plain 
 
-	Usage: md-tmpl [options] markdown-files
+  Usage: md-tmpl [options] [files...]
 
-	Version: 0.0.0-dev
-
-	Options:
-	  --preview, -p, Enables preview mode. Displays all commands
-	  encountered and performs no writes.
-
-	Read more:
-	  https://github.com/jpillora/md-tmpl
+  Options:
+  --preview, -p  Enables preview mode. Displays all commands encountered.
+  --write, -w    Write file instead of printing to standard out
+  --help, -h
 
 ```
-</tmpl>
+<!--/tmpl-->
 
 ### Stuff
 
