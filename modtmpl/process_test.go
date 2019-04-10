@@ -17,22 +17,22 @@ var cases = []struct {
 	{
 		"echo",
 		"*Updated on <!--tmpl:echo foo--><!--/tmpl-->*",
-		"*Updated on <!--tmpl:echo foo -->foo\n<!--/tmpl-->*",
+		"*Updated on <!--tmpl:echo foo-->foo\n<!--/tmpl-->*",
 	},
 	{
 		"echo_pipe",
 		"*Pipe test <!--tmpl:echo -n abc | tr b z--><!--/tmpl-->*",
-		"*Pipe test <!--tmpl:echo -n abc | tr b z -->azc<!--/tmpl-->*",
+		"*Pipe test <!--tmpl:echo -n abc | tr b z-->azc<!--/tmpl-->*",
 	},
 	{
 		"multi",
 		"Multi <!--tmpl,chomp:echo foo--><!--/tmpl--> and <!--tmpl,chomp:echo bar--><!--/tmpl-->",
-		"Multi <!--tmpl,chomp:echo foo -->foo<!--/tmpl--> and <!--tmpl,chomp:echo bar -->bar<!--/tmpl-->",
+		"Multi <!--tmpl,chomp:echo foo-->foo<!--/tmpl--> and <!--tmpl,chomp:echo bar-->bar<!--/tmpl-->",
 	},
 	{
 		"html_unesc",
 		`<!--tmpl,chomp:echo foo \&gt; bar--><!--/tmpl-->`,
-		`<!--tmpl,chomp:echo foo \&gt; bar -->foo > bar<!--/tmpl-->`,
+		`<!--tmpl,chomp:echo foo \&gt; bar-->foo > bar<!--/tmpl-->`,
 	},
 }
 

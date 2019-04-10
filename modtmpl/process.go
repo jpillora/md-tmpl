@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"sync"
 )
 
 type processor struct {
@@ -27,8 +26,7 @@ func NewProcessor() *processor {
 	return cfg
 }
 
-func (config *processor) ProcessFile(file string, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (config *processor) ProcessFile(wd, file string) {
 	//as a safety measure, only process .md files
 	if filepath.Ext(file) != ".md" {
 		fmt.Printf("%s not a .md file\n", file)
@@ -43,7 +41,7 @@ func (config *processor) ProcessFile(file string, wg *sync.WaitGroup) {
 	s, _ := os.Stat(file)
 
 	//process input
-	commands, b := process(config.Preview, b)
+	commands, b := process(wd, config.Preview, b)
 	//preview only!
 	if config.Preview {
 		b := strings.Builder{}
@@ -83,7 +81,7 @@ var end = regexp.MustCompile(
 	//open and close
 	`<(!--)?/tmpl(--)?>`)
 
-func process(preview bool, input []byte) ([]string, []byte) {
+func process(wd string, preview bool, input []byte) ([]string, []byte) {
 	commands := []string{}
 	output := bytes.Buffer{}
 	curr := input
@@ -143,7 +141,7 @@ func process(preview bool, input []byte) ([]string, []byte) {
 			continue
 		}
 		//run command!
-		result := run(unesc_cmd)
+		result := run(wd, unesc_cmd)
 		//trim *last* newline
 		if chomp && bytes.HasSuffix(result, []byte("\n")) {
 			result = result[:len(result)-1] //newline is 13 => 1 byte
@@ -165,7 +163,7 @@ func process(preview bool, input []byte) ([]string, []byte) {
 		}
 		output.WriteRune(':')
 		output.WriteString(raw_cmd)
-		output.WriteString(" -->")
+		output.WriteString("-->")
 		output.Write(result)
 		output.WriteString("<!--/tmpl-->")
 	}
@@ -175,8 +173,9 @@ func process(preview bool, input []byte) ([]string, []byte) {
 var exitMsg = []byte("exit status 1\n")
 
 //run script by piping into bash
-func run(script string) []byte {
+func run(wd string, script string) []byte {
 	cmd := exec.Command("bash")
+	cmd.Dir = wd
 	cmd.Stdin = strings.NewReader(script)
 	b := &bytes.Buffer{}
 	cmd.Stdout = b

@@ -19,7 +19,10 @@ func main() {
 	wg := sync.WaitGroup{}
 	for _, file := range root.Files {
 		wg.Add(1)
-		go proc.ProcessFile(file, &wg)
+		go func(f string) {
+			defer wg.Done()
+			proc.ProcessFile(".", f)
+		}(file)
 	}
 	wg.Wait()
 }
