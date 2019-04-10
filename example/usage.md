@@ -1,6 +1,6 @@
 ### Usage
 
-<!--tmpl,chomp,code=plain: md-tmpl --help-->
+<!--tmpl,chomp,code=plain: md-tmpl --help -->
 ``` plain 
 
   Usage: md-tmpl [options] [files...]
