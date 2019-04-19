@@ -14,9 +14,10 @@ import (
 var VERSION = "0.0.0-dev"
 
 var config = struct {
-	Preview bool     `help:"Enables preview mode. Displays all commands encountered."`
-	Write   bool     `help:"Write file instead of printing to standard out"`
-	Files   []string `type:"args" min:"1"`
+	Preview    bool     `help:"Enables preview mode. Displays all commands encountered."`
+	Write      bool     `help:"Write file instead of printing to standard out"`
+	WorkingDir string   `short:"d" help:"Specify the working directory for all commands (defaults to each file's dirname)"`
+	Files      []string `type:"args" min:"1"`
 }{
 	Preview: false,
 	Write:   false,
@@ -71,8 +72,13 @@ func processFile(file string, wg *sync.WaitGroup) {
 		fmt.Print(out)
 		return
 	}
+	//pick a working dir
+	wd := config.WorkingDir
+	if wd == "" {
+		wd = filepath.Dir(file)
+	}
 	//map input to output
-	b = mdtmpl.Execute(b)
+	b = mdtmpl.ExecuteIn(b, wd)
 	//no write! print instead
 	if !config.Write {
 		fmt.Printf("file %s\n======\n%s\n======\n", file, b)

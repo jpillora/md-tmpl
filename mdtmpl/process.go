@@ -27,7 +27,7 @@ var end = regexp.MustCompile(
 //Commands returns the command strings, and
 //does NOT execute them.
 func Commands(md []byte) []string {
-	cmds, _ := process(md, true)
+	cmds, _ := process(md, "", true)
 	return cmds
 }
 
@@ -39,11 +39,18 @@ func Commands(md []byte) []string {
 //It does not return an error. Both successful and
 //failing commands will return their output.
 func Execute(md []byte) []byte {
-	_, out := process(md, false)
+	_, out := process(md, "", false)
 	return out
 }
 
-func process(input []byte, commandsOnly bool) ([]string, []byte) {
+//ExecuteIn performs an Execute in the specified
+//working directory.
+func ExecuteIn(md []byte, workingDir string) []byte {
+	_, out := process(md, workingDir, false)
+	return out
+}
+
+func process(input []byte, workingDir string, commandsOnly bool) ([]string, []byte) {
 	commands := []string{}
 	output := bytes.Buffer{}
 	curr := input
@@ -106,7 +113,17 @@ func process(input []byte, commandsOnly bool) ([]string, []byte) {
 			continue
 		}
 		//run command!
-		result := run(cmd)
+		c := exec.Command("bash")
+		if workingDir != "" {
+			c.Dir = workingDir
+		}
+		c.Stdin = strings.NewReader(cmd)
+		out, err := c.CombinedOutput()
+		//ignore whether it failed or not
+		if err != nil {
+			log.Printf("failed to exec '%s': %s", cmd, err)
+		}
+		result := bytes.TrimSuffix(out, exitMsg)
 		//trim *last* newline
 		if chomp && bytes.HasSuffix(result, []byte("\n")) {
 			result = result[:len(result)-1] //newline is 13 => 1 byte
@@ -136,22 +153,6 @@ func process(input []byte, commandsOnly bool) ([]string, []byte) {
 }
 
 var exitMsg = []byte("exit status 1\n")
-
-//run script by piping into bash
-func run(script string) []byte {
-	cmd := exec.Command("bash")
-	cmd.Stdin = strings.NewReader(script)
-	b := &bytes.Buffer{}
-	cmd.Stdout = b
-	cmd.Stderr = b
-	//ignore whether it failed or not
-	if err := cmd.Start(); err != nil {
-		log.Printf("failed to exec '%s': %s", script, err)
-	}
-	cmd.Wait()
-	//use any output
-	return bytes.TrimSuffix(b.Bytes(), exitMsg)
-}
 
 func getStrings(b []byte, indexPairs []int) []string {
 	num := len(indexPairs) / 2
