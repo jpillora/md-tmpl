@@ -17,7 +17,7 @@ var cases = []struct {
 		"*Updated on <!--tmpl:echo foo -->foo\n<!--/tmpl-->*",
 	},
 	{
-		"*Pipe test <tmpl: echo -n abc | tr b z></tmpl>*",
+		"*Pipe test <!--tmpl: echo -n abc | tr b z--><!--/tmpl-->*",
 		"*Pipe test <!--tmpl:echo -n abc | tr b z -->azc<!--/tmpl-->*",
 	},
 	{
