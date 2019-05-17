@@ -136,7 +136,7 @@ func process(input []byte, workingDir string, commandsOnly bool) ([]string, []by
 		//replace last result with new result
 		output.Write(pre)
 		output.WriteString("<!--tmpl")
-		if chomp {
+		if code == "" && chomp {
 			output.WriteString(",chomp")
 		}
 		if code != "" {
