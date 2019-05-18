@@ -16,8 +16,8 @@ var VERSION = "0.0.0-dev"
 var config = struct {
 	Preview    bool     `help:"Enables preview mode. Displays all commands encountered."`
 	Write      bool     `help:"Write file instead of printing to standard out"`
-	WorkingDir string   `short:"d" help:"Specify the working directory for all commands (defaults to each file's dirname)"`
-	Files      []string `type:"args" min:"1"`
+	WorkingDir string   `opts:"short=d,help=Specify the working directory for all commands (defaults to each file's dirname)"`
+	Files      []string `opts:"mode=arg,min=1"`
 }{
 	Preview: false,
 	Write:   false,
@@ -27,7 +27,7 @@ func main() {
 	//cli
 	opts.New(&config).
 		Name("md-tmpl").
-		Description("Markdown template will look for 'tmpl' HTML comments in the " +
+		Summary("Markdown template will look for 'tmpl' HTML comments in the " +
 			"give files. Templates must be in the format:\n" +
 			"    <!--tmpl: my-command --><!--/tmpl-->\n\n" +
 			"In this case, 'my-command' would be executed via bash and the output " +
