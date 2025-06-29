@@ -13,7 +13,7 @@ var cases = []struct {
 		"abc",
 	},
 	{
-		"*Updated on <tmpl:echo foo></tmpl>*",
+		"*Updated on <!--tmpl:echo foo--><!--/tmpl-->*",
 		"*Updated on <!--tmpl:echo foo -->foo\n<!--/tmpl-->*",
 	},
 	{
@@ -21,12 +21,16 @@ var cases = []struct {
 		"*Pipe test <!--tmpl:echo -n abc | tr b z -->azc<!--/tmpl-->*",
 	},
 	{
-		"Multi <tmpl,chomp:echo foo></tmpl> and <tmpl,chomp:echo bar></tmpl>",
+		"Multi <!--tmpl,chomp:echo foo--><!--/tmpl--> and <!--tmpl,chomp:echo bar--><!--/tmpl-->",
 		"Multi <!--tmpl,chomp:echo foo -->foo<!--/tmpl--> and <!--tmpl,chomp:echo bar -->bar<!--/tmpl-->",
 	},
 	{
-		`<!--tmpl,chomp:echo foo \&gt; bar--><!--/tmpl-->`,
-		`<!--tmpl,chomp:echo foo \> bar -->foo > bar<!--/tmpl-->`,
+		`<!--tmpl,chomp:echo -n ping; echo -n pong; --><!--/tmpl-->`,
+		`<!--tmpl,chomp:echo -n ping; echo -n pong; -->pingpong<!--/tmpl-->`,
+	},
+	{
+		`<!--tmpl,chomp:echo -n ping 1>/dev/null; echo -n pong; --><!--/tmpl-->`,
+		`<!--tmpl,chomp:echo -n ping 1>/dev/null; echo -n pong; -->pong<!--/tmpl-->`,
 	},
 }
 
@@ -34,7 +38,7 @@ func TestAll(t *testing.T) {
 	for i, c := range cases {
 		got := Execute([]byte(c.input))
 		expected := []byte(c.expected)
-		if bytes.Compare(got, expected) != 0 {
+		if !bytes.Equal(got, expected) {
 			t.Errorf("Case #%d:\n====Expected====\n%s\n====Got    ====\n%s\n", i+1, expected, got)
 		}
 	}

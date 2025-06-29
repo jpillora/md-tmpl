@@ -11,40 +11,42 @@ import (
 
 var start = regexp.MustCompile(
 	//open
-	`<(!--)?tmpl` +
+	`<(!--)tmpl` +
 		//optional flags
 		`(` +
 		`(,\w+(=\w+)?)*` +
 		`)` +
 		//command
-		`:([^>]+?)` +
+		`:(.+?)` +
 		//close
-		`(--)?>`)
+		`(--)>`)
 var end = regexp.MustCompile(
 	//open and close
-	`<(!--)?/tmpl(--)?>`)
+	`<(!--)/tmpl(--)>`)
 
-//Commands returns the command strings, and
-//does NOT execute them.
+// Commands returns the command strings, and
+// does NOT execute them.
 func Commands(md []byte) []string {
 	cmds, _ := process(md, "", true)
 	return cmds
 }
 
-//Execute the all commands found in the given file
-//and store the result in between the comment tags:
-//    <!--tmpl: my-command -->
-//    some output of my-command goes here
-//    <!--/tmpl-->
-//It does not return an error. Both successful and
-//failing commands will return their output.
+// Execute the all commands found in the given file
+// and store the result in between the comment tags:
+//
+//	<!--tmpl: my-command -->
+//	some output of my-command goes here
+//	<!--/tmpl-->
+//
+// It does not return an error. Both successful and
+// failing commands will return their output.
 func Execute(md []byte) []byte {
 	_, out := process(md, "", false)
 	return out
 }
 
-//ExecuteIn performs an Execute in the specified
-//working directory.
+// ExecuteIn performs an Execute in the specified
+// working directory.
 func ExecuteIn(md []byte, workingDir string) []byte {
 	_, out := process(md, workingDir, false)
 	return out

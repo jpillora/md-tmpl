@@ -80,7 +80,6 @@ _Updated on <!--tmpl,chomp:date -->Sun 31 Mar 2019 00:41:18 AEDT<!--/tmpl-->_
 
 - Malicious tags. Commands are run by piping strings straight into `bash`. If you think someone has slipped a `rm -rf /` in one of your markdown files, you can view all nested commands with the `--preview, -p` option.
 - Currently it has only been tested on Markdown hosted on Github (GFM).
-- You cannot use `>` in your commands as it marks the end of the command by closing the tag, use `&gt;` instead.
 
 #### MIT License
 

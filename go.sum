@@ -6,5 +6,9 @@ github.com/jpillora/opts v0.0.0-20190409130004-a0ba1e0f37f7 h1:X8y4uUCIYK5s7VDDA
 github.com/jpillora/opts v0.0.0-20190409130004-a0ba1e0f37f7/go.mod h1:9CwarOXfgQBIdG1wc0EfXSbS14ky0BlFqeGmIsyZvvE=
 github.com/jpillora/opts v1.0.0 h1:HrSoX1EK118+dI4mMER+2zYr3ybP4v3Io/L2ajcmG74=
 github.com/jpillora/opts v1.0.0/go.mod h1:9CwarOXfgQBIdG1wc0EfXSbS14ky0BlFqeGmIsyZvvE=
+github.com/jpillora/opts v1.2.3 h1:Q0YuOM7y0BlunHJ7laR1TUxkUA7xW8A2rciuZ70xs8g=
+github.com/jpillora/opts v1.2.3/go.mod h1:7p7X/vlpKZmtaDFYKs956EujFqA6aCrOkcCaS6UBcR4=
 github.com/posener/complete v1.2.1 h1:LrvDIY//XNo65Lq84G/akBuMGlawHvGBABv8f/ZN6DI=
 github.com/posener/complete v1.2.1/go.mod h1:6gapUrK/U1TAN7ciCoNRIdVC5sbdBTUh1DKN0g6uH7E=
+github.com/posener/complete v1.2.2-0.20190308074557-af07aa5181b3 h1:GqpA1/5oN1NgsxoSA4RH0YWTaqvUlQNeOpHXD/JRbOQ=
+github.com/posener/complete v1.2.2-0.20190308074557-af07aa5181b3/go.mod h1:6gapUrK/U1TAN7ciCoNRIdVC5sbdBTUh1DKN0g6uH7E=
